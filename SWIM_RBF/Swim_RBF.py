@@ -56,7 +56,7 @@ def scoreAll(points, X, epsilon):
 
 
 class SwimRBF:
-    def __init__(self, minCls=None, epsilon=None, steps=5, p=0.75, tau = 0.9):
+    def __init__(self, minCls=None, epsilon=None, steps=5, p=0.75, tau = 0.25):
         self.epsilon = epsilon
         self.steps   = steps
         self.p       = p
