@@ -8,7 +8,9 @@ This method is used to generate synthetic training samples for classification do
 Example use of the Swim_RBF code:
 
 import Swim_RBF as Swim
+
 erbo = Swim.extremeRBO(epsilon=None)
+
 X_res, y_res = erbo.extremeRBOSample(x_trainImb, y_trainImb, numSamples)
 
 
