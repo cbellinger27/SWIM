@@ -40,7 +40,8 @@ class SwimMaha:
         ## CENTRE THE MAJORITY CLASS AND CENTRE THE MINORITY CLASS WITH RESPECT TO THE MAJORITY CLASS
         scaler = StandardScaler(with_std=False)
         T_maj  = np.transpose(scaler.fit_transform(data_maj_orig))
-        T_min  = np.transpose(data_min_orig) 
+        # T_min  = np.transpose(data_min_orig) # changed as per email from Neni Alya Firdausanti 
+        T_min  = np.transpose(scaler.transform(data_min_orig))
 
         ## STEP 2: WHITEN
         C_inv = None
@@ -106,7 +107,7 @@ class SwimMaha:
                
             syntheticInstances.append(new)
             
-        sampled_data   = np.concatenate([np.array(syntheticInstances), data])
+        sampled_data   = np.concatenate([scaler.inverse_transform(np.array(syntheticInstances)), data])
         sampled_labels = np.append([self.minClass]*len(syntheticInstances),labels)
 
         return sampled_data, sampled_labels
