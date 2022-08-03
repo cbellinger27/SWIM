@@ -56,10 +56,9 @@ def scoreAll(points, X, epsilon):
 
 
 class SwimRBF:
-    def __init__(self, minCls=None, epsilon=None, steps=5, p=0.75, tau = 0.25):
+    def __init__(self, minCls=None, epsilon=None, steps=5, tau = 0.25):
         self.epsilon = epsilon
         self.steps   = steps
-        self.p       = p
         self.tau     = tau
         self.minCls  = minCls
         self.scaler = StandardScaler()
@@ -72,42 +71,25 @@ class SwimRBF:
         trnMajData = data[np.where(labels!=self.minCls)[0], :]
         trnMinData = data[np.where(labels==self.minCls)[0], :]
         
-
         if self.epsilon == None:
             self.epsilon = self.fit(trnMajData)
 
-        trnDens = scoreAll(trnMajData, trnMajData, self.epsilon)
-        threeStd  =  0.1 * np.std(trnDens)
-        meanDens  = np.mean(trnDens)
-        llam = np.max([0.005,meanDens - threeStd])
-        ulam = meanDens + threeStd
-
-
         synthData  = np.empty([0, data.shape[1]])
         stds       = self.tau*np.std(trnMinData, axis=0)
-        decay      = 0.9
 
-        if(np.sum(labels==1)==1):
+        if(np.sum(labels==self.minCls)==1):
             trnMinData    = trnMinData.reshape(1,len(trnMinData))
 
-        i = 0
         while synthData.shape[0] < numSamples:
-            stepP = self.p
             j     = np.random.choice(trnMinData.shape[0],1)[0]
             scoreCur = score(trnMinData[j,:], trnMajData,  self.epsilon)
             for k in range(self.steps):
                 step      = trnMinData[j,:] + np.random.normal(0, stds, trnMinData.shape[1])
                 stepScore = score(step, trnMajData,  self.epsilon)
-                if stepScore <= scoreCur and stepScore >= scoreCur+ulam and np.random.uniform(0,1,1)[0] < stepP:
+                if stepScore <= scoreCur:
                     synthData = np.append(synthData,step.T.reshape((1, len(step))),axis=0)
                     break
-                elif stepScore <= scoreCur+llam and np.random.uniform(0,1,1)[0] < 1-stepP:
-                    synthData = np.append(synthData,step.T.reshape((1, len(step))),axis=0)
-                    break
-                else:
-                    stepP = stepP * decay
-            i = i + 1
-
+        
         sampled_data = np.concatenate([np.array(synthData), data])
         sampled_labels = np.append([self.minCls]*len(synthData),labels)
 
