@@ -1,0 +1,11 @@
+name: basicML
+channels:
+  - conda-forge
+  - anaconda
+  - defaults
+dependencies:
+  - imbalanced-learn
+  - numpy
+  - scikit-learn
+  - scipy=1.5.2
+prefix: /home/colin/anaconda3/envs/basicML
